@@ -1,0 +1,6 @@
+DC Bot Ideas
+------------
+
+Relationship Map
+Account for participation
+Refactor
