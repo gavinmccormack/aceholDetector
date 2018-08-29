@@ -10,7 +10,9 @@ class aceholDetector(object):
     """ Main object for interacting with the sentiment tools """
     def __init__(self):
         self.data = None
+        self.result = None
         self.csv_name = "default.csv"
+        self.sentiment_lib = None
 
     def load_csv(self, csv_name):  
         """ Load a CSV into the data """
@@ -19,30 +21,35 @@ class aceholDetector(object):
 
     def load_json(self, json):
         self.data = json
+        self.populate_sentiment_fields()
+
 
     def save_csv(self):
-        """ Save current data to CSV """
+        """ Save current data to CSV """ 
         self.data.to_csv(self.csv_name, mode='a', encoding='utf-8', index=False)    
  
     def populate_sentiment_fields(self):
         """ Applies sentiment columns to the data """
-        sentiment_library = sentiment(self.data) # Create an instance of the sentiment library, analysis ( or config ) is done here
-        self.data = sentiment_library.dframe() 
+        self.sentiment_lib = sentiment(self.data) # Create an instance of the sentiment library, analysis ( or config ) is done here
+        self.result = self.sentiment_lib.df
 
+    def print_stats(self):
+        self.sentiment_lib.print_stats()
+ 
 
 def main():
     """ This is a fair simulation of how this package would be used if you weren't interested in the internals """
     # Assuming CSV with author, timestamp, and text is already present
     # Some data sources might have title/body or other features
- 
-    ace = aceholDetector()
+
+    ace = aceholDetector() 
     #ace.load_csv('discord_messages.csv')  
-    #ace.populate_sentiment_fields()
-    disco_api = aceholDiscord.aceholDiscord()
-    messages = disco_api.get_all_messages()
-    ace.load_json(messages)
+    disco_api = aceholDiscord.aceholDiscord() 
+    messages = disco_api.get_messages(limit=1000000)
+    ace.load_json(messages)  
+    ace.print_stats()            
+        
+     
  
-
-
 if __name__ == "__main__": 
     main() # If run directly
