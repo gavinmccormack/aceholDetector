@@ -44,12 +44,11 @@ def main():
 
     ace = aceholDetector() 
     #ace.load_csv('discord_messages.csv')  
-    disco_api = aceholDiscord.aceholDiscord() 
-    messages = disco_api.get_messages(limit=1000000)
-    ace.load_json(messages)  
-    ace.print_stats()            
-        
-     
+    disco_api = aceholDiscord.aceholDiscord()  
+    messages = disco_api.get_messages(limit=1000)
+    ace.load_json(messages)
+    ace.print_stats()                
 
-if __name__ == "__main__": 
-    main() # If run directly
+
+if __name__ == "__main__":  
+    main() # If run directly 

@@ -7,17 +7,19 @@ from config import NUMBER_OF_BLOCKS
 
 class sentiment(object):
     def __init__(self, data):
+        """ In need of cleaning up """
         self.sia = SIA()
-        self.data = data
-        self.df = None
-        self.unreadable_data = [] # List of unreadable indexes
+        self.data = data # Raw JSON Data
+        self.df = None # Dataframe
         self.total_negative = 0
         self.total_positive = 0
-        self.total_compound = 0
+        self.total_compound = 0  
+        self.unique_names = set()
+        self.posts_per_user = {}
         self.leader_board = {}
+        
         self.add_sentiment_fields()
         self.blocks = self.create_time_blocks() 
-        self.unique_names = set()
         self.populate_time_blocks()
         self.create_leaderboard()
         
@@ -27,18 +29,19 @@ class sentiment(object):
         self.total_compound +=  stats_obj['compound']
         self.total_positive +=  stats_obj['pos']
         self.total_negative +=  stats_obj['neg']
+        if ( stats_obj['author'] not in self.posts_per_user):
+            self.posts_per_user[stats_obj['author']] = 1
+        self.posts_per_user[stats_obj['author']] += 1
 
     def add_sentiment_fields(self):
         """ Process the data and add sentiment columns to the data """
         results = []
         for data_row in self.data:
             text = str(data_row['message'])
-            item_time = pendulum.parse(data_row['timestamp'])
-            # SIA will create an object with pos, neg, and compound stats. Additional fields are added and the data is updated
-            sentiment_stats = self.sia.polarity_scores(text)
+            sentiment_stats = self.sia.polarity_scores(text) # SIA will create an object with pos, neg, and compound stats.
             sentiment_stats['author'] = data_row['author'] # Not ideal for different data types/sets. Not very flexible.
             sentiment_stats['message'] = text
-            sentiment_stats['timestamp'] = item_time 
+            sentiment_stats['timestamp'] = pendulum.parse(data_row['timestamp'])
             self.set_overall_stats(sentiment_stats) # Tally up totals and similar
             results += [sentiment_stats]
         self.df = results
@@ -54,7 +57,7 @@ class sentiment(object):
                 total_negativity_for_this_block += item['compound']
                 unique_authors_for_this_block.add(item['author'])
             for author in unique_authors_for_this_block:
-                self.leaderboard[item['author']] += total_negativity_for_this_block
+                self.leaderboard[item['author']] += total_negativity_for_this_block / self.posts_per_user[item['author']]
         self.order_leaderboard()
 
     def order_leaderboard(self):
@@ -98,3 +101,7 @@ class sentiment(object):
         print("LEADERBOARD \n")
         for name, score in self.leaderboard:
             print(name, " : ", score)
+        print("--------------")
+        print(" Posts per user \n")
+        for name, number_of_posts in sorted(((value, key) for (key,value) in self.posts_per_user.items() ), reverse=True): # clean me up !
+            print(name, " : ", number_of_posts)
