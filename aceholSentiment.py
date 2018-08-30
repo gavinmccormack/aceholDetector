@@ -50,10 +50,11 @@ class sentiment(object):
         for n in self.blocks:
             total_negativity_for_this_block = 0
             unique_authors_for_this_block = set()
-            for item in n['items']:
-                total_negativity_for_this_block += item['neg']
+            for item in n['items']: # I think this is incorrect. Almost definitely. In addition will need to track the number of posts by each author, and divide totals by that number ( perhaps there is a formula for this ). 
+                total_negativity_for_this_block += item['compound']
                 unique_authors_for_this_block.add(item['author'])
-                self.leaderboard[item['author']] += item['compound']
+            for author in unique_authors_for_this_block:
+                self.leaderboard[item['author']] += total_negativity_for_this_block
         self.order_leaderboard()
 
     def order_leaderboard(self):
@@ -94,6 +95,6 @@ class sentiment(object):
         print("Overall compound : ", self.total_compound)
         print("Unique users: \n", self.unique_names)
         print("--------------")
-        print("LEADERBOARD \n\n")
+        print("LEADERBOARD \n")
         for name, score in self.leaderboard:
             print(name, " : ", score)
