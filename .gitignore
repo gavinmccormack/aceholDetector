@@ -5,3 +5,5 @@ config.py
 .csv
 .txt
 /prototyping
+django_sentiment_env/**/*
+django_sentiment/**/*

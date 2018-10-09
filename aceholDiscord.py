@@ -60,7 +60,14 @@ class aceholDiscord(object):
 def main():
     """ Test method only run if called directly """
     api = aceholDiscord()
-    messages = api.get_messages(limit=100)
+    try:
+        messages = api.get_most_recent()
+        print(messages)
+        messages = api.get_messages(limit=100)
+    except Exception as e:
+        print(e)
+
+    
 
 if __name__ == "__main__": 
     main() # If run directly
