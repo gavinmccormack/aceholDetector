@@ -29,6 +29,7 @@ class aceholDiscord(object):
     def get_messages(self, limit=999999):
         """ Get messages from target discord channel. Defaults to all messages(or 99,9999 of them) """
         messages = self.get_most_recent()
+        print(messages)
         oldest_id = messages[-1]['id']
         no_of_results_in_batch = len(messages)
         while (no_of_results_in_batch >= 100 and limit > len(messages)): # check rate limits here, this is a 'dumb' way of doing this that misses the last messages and fails in a few other ways.
@@ -55,6 +56,9 @@ class aceholDiscord(object):
         """ Most recent 100 messages """
         request_url = "https://discordapp.com/api/channels/{0}/messages?token={1}&limit=100".format(TARGET_CHANNEL, DISCO_TOKEN)
         response = requests.get(request_url)
+        if response.status_code != "200":
+            print("Request URL: " , request_url)
+            print("There has been an error with the discord request; please check the access token and target channel is correct")
         return json.loads(response.content)
 
 def main():

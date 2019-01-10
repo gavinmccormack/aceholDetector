@@ -7,3 +7,4 @@ config.py
 /prototyping
 django_sentiment_env/**/*
 django_sentiment/**/*
+local_config.py

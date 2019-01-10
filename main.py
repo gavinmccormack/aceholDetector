@@ -41,6 +41,8 @@ def main():
     """ This is a fair simulation of how this package would be used if you weren't interested in the internals """
     # Assuming CSV with author, timestamp, and text is already present
     # Some data sources might have title/body or other features
+    import nltk
+    nltk.download('vader_lexicon')
 
     ace = aceholDetector() 
     #ace.load_csv('discord_messages.csv')  
