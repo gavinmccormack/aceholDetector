@@ -87,15 +87,14 @@ class sentiment(object):
 
     def print_stats(self):
         """ Text based output of any stats """
-        print("\nFinal results:")
-        print("--------------")
+        print("\nFinal results: \n")
         print("Number of entries : ", len(self.data))
         print("Total Positivity : ", self.total_positive)
         print("Total Negativity : ", self.total_negative)
         print("Overall compound : ", self.total_compound)
-        print("--------------")
+        print("\n--------------")
         print("Unique users: \n", self.unique_names)
-        print("--------------")
+        print("\n--------------")
         print("LEADERBOARD \n")
         for name, score in self.leaderboard:
             print(name, " : ", score)
