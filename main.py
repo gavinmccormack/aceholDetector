@@ -20,13 +20,15 @@ class aceholDetector(object):
         self.data = pd.read_csv(self.csv_name, skip_blank_lines=True)
 
     def load_json(self, json):
-        self.data = json
+        self.data = pd.DataFrame.from_records(self.result)
         self.populate_sentiment_fields()
 
 
-    def save_csv(self):
-        """ Save current data to CSV """ 
-        self.data.to_csv(self.csv_name, mode='a', encoding='utf-8', index=False)    
+    def save_to_csv(self):
+        """ Save current data to CSV """    
+        df = pd.DataFrame.from_records(self.result)
+        df2 = df[['author', 'message', 'timestamp']]
+        df2.to_csv('data/messages.csv', mode='a', encoding='utf-8', index=False) 
  
     def populate_sentiment_fields(self):
         """ Applies sentiment columns to the data """
@@ -41,18 +43,22 @@ def main():
     """ This is a fair simulation of how this package would be used if you weren't interested in the internals """
     # Assuming CSV with author, timestamp, and text is already present
     # Some data sources might have title/body or other features
+
+    # This is the main testing point for this.
+    # Ideally this should be a two liner ( or a line for each type of stat returned if it was more granular )
     import nltk
     nltk.download('vader_lexicon')
 
     ace = aceholDetector() 
-    #ace.load_csv('discord_messages.csv')  
     disco_api = aceholDiscord.aceholDiscord()  
     
     all_messages = disco_api.get_server_messages()
+    
     print(all_messages)
     messages = disco_api.get_messages(limit=1000)
     ace.load_json(all_messages)
 
+    ace.save_to_csv()  
     ace.print_stats()                
 
 
