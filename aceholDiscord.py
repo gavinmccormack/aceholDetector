@@ -17,14 +17,44 @@ class aceholDiscord(object):
     def __init__(self):
         pass
 
-    def get_messages_json(self, before_id, channel_id):
-        """ Get the first 100 messages before the message ID """
-        request_url = "https://discordapp.com/api/channels/{0}/messages?token={1}&limit=100&before={2}".format(channel_id, DISCO_TOKEN, before_id)
-        response = requests.get(request_url)
+    def send_request(url):
+        """ Sends a request to discord servers. Authentication is taken care of here so a ?Token= parameter is not necessary """
+        response = requests.get(url, headers={"Authorization": "Bot " + DISCO_TOKEN})
         if response.status_code != 200:
             print(response.status_code)
             print("Request URL: " , request_url)
             print("There has been an error with the discord request; please check the access token and target channel is correct")
+            sys.exit()
+        return response
+
+    def format_data(self, json):
+        data = []
+        for item in json: # This is discord specific. Clearing out unneeded data from the json
+            data_row = {}
+            data_row['message'] = item['content']
+            data_row['timestamp'] = item['timestamp']
+            data_row['author'] = item['author']['username']
+            data += [data_row]
+        return data
+
+    def get_most_recent(self):
+        """ Most recent 100 messages """
+        request_url = "https://discordapp.com/api/channels/{0}/messages?limit=100".format(TARGET_CHANNEL)
+        response = self.send_request(request_url)
+        return json.loads(response.content)
+
+    def get_channel_list(self, server_id = TARGET_SERVER):
+        """ Returns a list of channel IDs within a server """
+        request_url = "https://discordapp.com/api/guilds/{0}/channels".format(TARGET_SERVER)
+        response = self.send_request(request_url)
+        response_json = json.loads(response.content)
+        channel_ids = [x['id'] for x in response_json]
+        return channel_ids
+        
+    def get_messages_json(self, before_id, channel_id):
+        """ Get the first 100 messages before the message ID """
+        request_url = "https://discordapp.com/api/channels/{0}/messages?token={1}&limit=100&before={2}".format(channel_id, DISCO_TOKEN, before_id)
+        response = self.send_request(request_url)
         return json.loads(response.content)
     
     def get_messages(self, limit=999999, channel_id=TARGET_CHANNEL):
@@ -37,7 +67,6 @@ class aceholDiscord(object):
             messages += new_messages
             oldest_id = messages[-1]['id']
             no_of_results_in_batch = len(new_messages)
-        
         message_data = self.format_data(messages) # Strip out unneeded fields
         return message_data  
 
@@ -47,46 +76,10 @@ class aceholDiscord(object):
         messages = []
         for channel_id in channels:
             messages += self.get_messages(channel_id=channel_id)
-        return messages
-
-    def format_data(self, json):
-        data = []
-        for item in json: # This is discord specific. Clearing out unneeded data from the json
-            data_row = {}
-            data_row['message'] = item['content']
-            data_row['timestamp'] = item['timestamp']
-            data_row['author'] = item['author']['username']
-            data += [data_row]
-
-        return data
-
-    def get_most_recent(self):
-        """ Most recent 100 messages """
-        request_url = "https://discordapp.com/api/channels/{0}/messages?limit=100".format(TARGET_CHANNEL, DISCO_TOKEN)
-        response = requests.get(request_url, headers={"Authorization": "Bot " + DISCO_TOKEN})
-        if response.status_code != 200:
-            print(response.status_code)
-            print("Request URL: " , request_url)
-            print("There has been an error with the discord request; please check the access token and target channel is correct")
-            sys.exit()
-        return json.loads(response.content)
-
-    def get_channel_list(self, server_id = TARGET_SERVER):
-        """ Returns a list of channel IDs within a server """
-        request_url = "https://discordapp.com/api/guilds/{0}/channels".format(TARGET_SERVER)
-        response = requests.get(request_url, headers={"Authorization": "Bot " + DISCO_TOKEN})
-        if response.status_code != 200:
-            print(response.status_code)
-            print("Request URL: " , request_url)
-            print("There has been an error with the discord request; please check the access token and target channel is correct")
-            sys.exit()
-        response_json = json.loads(response.content)
-        channel_ids = [x['id'] for x in response_json]
-        return channel_ids
-        
+        return messages        
 
 def main():
-    """ Test methods only run if called directly """
+    """ only run if called directly """
     api = aceholDiscord()
     try:
         messages = api.get_most_recent()
