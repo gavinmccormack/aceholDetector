@@ -24,6 +24,7 @@ class sentiment(object):
         self.create_leaderboard()
 
     def set_overall_stats(self, stats_obj):
+        """ Update the total running stats for messages found using this instance of the sentiment object. """
         self.total_compound +=  stats_obj['compound']
         self.total_positive +=  stats_obj['pos']
         self.total_negative +=  stats_obj['neg']
@@ -85,9 +86,20 @@ class sentiment(object):
                 if ( block['block_start'] <= item['timestamp'] and block['block_end'] >= item['timestamp'] ): # Does this item fall within the block start/end
                     block['items'] += [item] # If so, add it to this bucket
 
+    def count_words(self, smily_code):
+        no_of_words = 0
+        for data_row in self.data:
+            print(data_row['message'])
+            if data_row['message'].find("😉") != -1:
+                no_of_words += 1
+                print(data_row['message'])
+        print(no_of_words)
+
     def print_stats(self):
         """ Text based output of any stats """
-        print("\nFinal results: \n")
+        self.count_words("=]")
+
+        print("\nFinal results: \n") 
         print("Number of entries : ", len(self.data))
         print("Total Positivity : ", self.total_positive)
         print("Total Negativity : ", self.total_negative)

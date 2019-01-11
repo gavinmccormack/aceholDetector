@@ -17,7 +17,7 @@ class aceholDiscord(object):
     def __init__(self):
         pass
 
-    def send_request(url):
+    def send_request(self, url):
         """ Sends a request to discord servers. Authentication is taken care of here so a ?Token= parameter is not necessary """
         response = requests.get(url, headers={"Authorization": "Bot " + DISCO_TOKEN})
         if response.status_code != 200:
@@ -50,7 +50,7 @@ class aceholDiscord(object):
         response_json = json.loads(response.content)
         channel_ids = [x['id'] for x in response_json]
         return channel_ids
-        
+
     def get_messages_json(self, before_id, channel_id):
         """ Get the first 100 messages before the message ID """
         request_url = "https://discordapp.com/api/channels/{0}/messages?token={1}&limit=100&before={2}".format(channel_id, DISCO_TOKEN, before_id)

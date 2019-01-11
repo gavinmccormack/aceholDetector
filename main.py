@@ -20,14 +20,14 @@ class aceholDetector(object):
         self.data = pd.read_csv(self.csv_name, skip_blank_lines=True)
 
     def load_json(self, json):
-        self.data = pd.DataFrame.from_records(self.result)
+        self.data = json
         self.populate_sentiment_fields()
 
 
     def save_to_csv(self):
         """ Save current data to CSV """    
         df = pd.DataFrame.from_records(self.result)
-        df2 = df[['author', 'message', 'timestamp']]
+        df2 = df[['message', 'author',  'timestamp']]
         df2.to_csv('data/messages.csv', mode='a', encoding='utf-8', index=False) 
  
     def populate_sentiment_fields(self):
@@ -53,12 +53,11 @@ def main():
     disco_api = aceholDiscord.aceholDiscord()  
     
     all_messages = disco_api.get_server_messages()
-    
-    print(all_messages)
-    messages = disco_api.get_messages(limit=1000)
     ace.load_json(all_messages)
+    #messages = disco_api.get_messages(limit=1000)
+    #ace.load_json(messages)
 
-    ace.save_to_csv()  
+    #ace.save_to_csv()  
     ace.print_stats()                
 
 
