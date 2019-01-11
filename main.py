@@ -47,8 +47,12 @@ def main():
     ace = aceholDetector() 
     #ace.load_csv('discord_messages.csv')  
     disco_api = aceholDiscord.aceholDiscord()  
+    
+    all_messages = disco_api.get_server_messages()
+    print(all_messages)
     messages = disco_api.get_messages(limit=1000)
-    ace.load_json(messages)
+    ace.load_json(all_messages)
+
     ace.print_stats()                
 
 

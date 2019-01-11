@@ -22,8 +22,6 @@ class sentiment(object):
         self.blocks = self.create_time_blocks() 
         self.populate_time_blocks()
         self.create_leaderboard()
-        
-        self.print_stats()
 
     def set_overall_stats(self, stats_obj):
         self.total_compound +=  stats_obj['compound']
@@ -47,13 +45,13 @@ class sentiment(object):
         self.df = results
 
     def create_leaderboard(self):
-        print("Creating leaderboards..")
+        """ Calculates the total negativity for a block of time, and then assigns blame to anyone in the vicinity. This blame is then tallied up. """
         self.leaderboard = dict.fromkeys(self.unique_names, 0)
         # Create a dictionary where the key is the user, and the value is the total of the blocks they were present in when negativity occured
         for n in self.blocks:
             total_negativity_for_this_block = 0
             unique_authors_for_this_block = set()
-            for item in n['items']: # I think this is incorrect. Almost definitely. In addition will need to track the number of posts by each author, and divide totals by that number ( perhaps there is a formula for this ). 
+            for item in n['items']: 
                 total_negativity_for_this_block += item['compound']
                 unique_authors_for_this_block.add(item['author'])
             for author in unique_authors_for_this_block:
@@ -63,8 +61,6 @@ class sentiment(object):
     def order_leaderboard(self):
         self.leaderboard = [ (v,k) for k,v in self.leaderboard.items() ]
         self.leaderboard.sort(reverse=True) # natively sort tuples by first element
-        for v,k in self.leaderboard:
-            print("%s: %d" % (k,v))
 
     def create_time_blocks(self):
         """ Returns a list of dict objects, representing time/number_of_blocks sized divisions of the total time """
@@ -90,18 +86,20 @@ class sentiment(object):
                     block['items'] += [item] # If so, add it to this bucket
 
     def print_stats(self):
-        print("Final results:")
+        """ Text based output of any stats """
+        print("\nFinal results:")
         print("--------------")
         print("Number of entries : ", len(self.data))
         print("Total Positivity : ", self.total_positive)
         print("Total Negativity : ", self.total_negative)
         print("Overall compound : ", self.total_compound)
+        print("--------------")
         print("Unique users: \n", self.unique_names)
         print("--------------")
         print("LEADERBOARD \n")
         for name, score in self.leaderboard:
             print(name, " : ", score)
-        print("--------------")
+        print("\n--------------")
         print(" Posts per user \n")
         for name, number_of_posts in sorted(((value, key) for (key,value) in self.posts_per_user.items() ), reverse=True): # clean me up !
             print(name, " : ", number_of_posts)
