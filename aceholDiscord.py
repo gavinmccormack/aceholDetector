@@ -86,6 +86,7 @@ def main():
         print(messages)
         api.get_channel_list()
         messages = api.get_messages(limit=100)
+        
     except Exception as e:
         print(e)
 

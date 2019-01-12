@@ -86,19 +86,16 @@ class sentiment(object):
                 if ( block['block_start'] <= item['timestamp'] and block['block_end'] >= item['timestamp'] ): # Does this item fall within the block start/end
                     block['items'] += [item] # If so, add it to this bucket
 
-    def count_words(self, smily_code):
+    def count_words(self, word):
         no_of_words = 0
         for data_row in self.data:
             print(data_row['message'])
-            if data_row['message'].find("😉") != -1:
+            if data_row['message'].find(word) != -1:
                 no_of_words += 1
-                print(data_row['message'])
-        print(no_of_words)
+        return no_of_words
 
     def print_stats(self):
         """ Text based output of any stats """
-        self.count_words("=]")
-
         print("\nFinal results: \n") 
         print("Number of entries : ", len(self.data))
         print("Total Positivity : ", self.total_positive)
