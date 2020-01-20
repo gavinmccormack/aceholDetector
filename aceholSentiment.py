@@ -4,8 +4,9 @@
 from nltk.sentiment.vader import SentimentIntensityAnalyzer as SIA
 import pendulum
 from config import NUMBER_OF_BLOCKS
+import leaderboard
 
-class sentiment(object):
+class aceholSentiment(object):
     def __init__(self, data):
         """ In need of cleaning up """
         self.sia = SIA()
@@ -16,12 +17,11 @@ class sentiment(object):
         self.total_compound = 0  
         self.unique_names = set()
         self.posts_per_user = {}
-        self.leader_board = {}
+        self.leader_board = leaderboard.Leaderboard()
         
         self.add_sentiment_fields()
         self.blocks = self.create_time_blocks() 
         self.populate_time_blocks()
-        self.create_leaderboard()
 
     def set_overall_stats(self, stats_obj):
         """ Update the total running stats for messages found using this instance of the sentiment object. """
@@ -44,24 +44,6 @@ class sentiment(object):
             self.set_overall_stats(sentiment_stats) # Tally up totals and similar
             results += [sentiment_stats]
         self.df = results
-
-    def create_leaderboard(self):
-        """ Calculates the total negativity for a block of time, and then assigns blame to anyone in the vicinity. This blame is then tallied up. """
-        self.leaderboard = dict.fromkeys(self.unique_names, 0)
-        # Create a dictionary where the key is the user, and the value is the total of the blocks they were present in when negativity occured
-        for n in self.blocks:
-            total_negativity_for_this_block = 0
-            unique_authors_for_this_block = set()
-            for item in n['items']: 
-                total_negativity_for_this_block += item['compound']
-                unique_authors_for_this_block.add(item['author'])
-            for author in unique_authors_for_this_block:
-                self.leaderboard[item['author']] += total_negativity_for_this_block / self.posts_per_user[item['author']]
-        self.order_leaderboard()
-
-    def order_leaderboard(self):
-        self.leaderboard = [ (v,k) for k,v in self.leaderboard.items() ]
-        self.leaderboard.sort(reverse=True) # natively sort tuples by first element
 
     def create_time_blocks(self):
         """ Returns a list of dict objects, representing time/number_of_blocks sized divisions of the total time """

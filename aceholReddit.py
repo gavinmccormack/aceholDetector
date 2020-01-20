@@ -13,6 +13,7 @@ from config import REDDIT_SECRET, REDDIT_ID
 #
 # So PRAW was a great tool for the reddit API, but they have removed "get post before time" which prohibits searching into the past.
 # More traditional webscraping is needed !
+# There is now a third party service that allows for old-style crawling  - Pushshift
 
 # to do
 #   Tidy get_most_recent_posts() 

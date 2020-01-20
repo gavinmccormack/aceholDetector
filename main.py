@@ -38,28 +38,3 @@ class aceholDetector(object):
     def print_stats(self):
         self.sentiment_lib.print_stats()
  
-
-def main():
-    """ This is a fair simulation of how this package would be used if you weren't interested in the internals """
-    # Assuming CSV with author, timestamp, and text is already present
-    # Some data sources might have title/body or other features
-
-    # This is the main testing point for this.
-    # Ideally this should be a two liner ( or a line for each type of stat returned if it was more granular )
-    import nltk
-    nltk.download('vader_lexicon')
-
-    ace = aceholDetector() 
-    disco_api = aceholDiscord.aceholDiscord()  
-    
-    all_messages = disco_api.get_server_messages()
-    ace.load_json(all_messages)
-    #messages = disco_api.get_messages(limit=1000)
-    #ace.load_json(messages)
-
-    #ace.save_to_csv()  
-    ace.print_stats()                
-
-
-if __name__ == "__main__":  
-    main() # If run directly 

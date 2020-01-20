@@ -22,7 +22,7 @@ class aceholDiscord(object):
         response = requests.get(url, headers={"Authorization": "Bot " + DISCO_TOKEN})
         if response.status_code != 200:
             print(response.status_code)
-            print("Request URL: " , request_url)
+            print("Request URL: " , url)
             print("There has been an error with the discord request; please check the access token and target channel is correct")
             sys.exit()
         return response
